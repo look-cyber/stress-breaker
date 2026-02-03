@@ -2,77 +2,88 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>STRESS BREAKER v2.2 - FIXED</title>
+    <title>DREAMCORE: STRESS REVENGE v3.0</title>
     <style>
-        :root { --main: #00ffcc; --bg: #050505; --accent: #706fd3; }
+        :root { --neon: #00ffcc; --ghost: #ffffff; --void: #0a0a0a; }
         body {
-            background: #000; color: #fff; font-family: 'Courier New', monospace;
-            margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+            background: var(--void); color: var(--ghost);
+            font-family: 'Courier New', monospace; margin: 0;
+            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
-        /* 광고 영역: 클릭 방해 금지 설정 */
+        /* 드림코어 CRT 노이즈 효과 */
+        body::before {
+            content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 200; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
         .ad-space {
-            height: 50px; background: rgba(255, 255, 255, 0.05);
+            height: 50px; background: rgba(255,255,255,0.05);
             display: flex; justify-content: center; align-items: center;
-            font-size: 10px; color: #444; pointer-events: none; /* 클릭 통과 */
-            border-bottom: 1px solid #222;
+            font-size: 10px; color: #444; border-bottom: 1px solid #222; z-index: 10;
         }
-        #ui-layer { text-align: center; padding: 10px; z-index: 50; }
+        #ui-layer { text-align: center; padding: 15px; z-index: 50; }
         #game-area {
-            flex-grow: 1; /* 남은 공간 모두 차지 */
-            width: 95%; margin: 0 auto; position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--accent); border-radius: 10px;
-            overflow: hidden; box-shadow: inset 0 0 20px rgba(112, 111, 211, 0.3);
+            flex-grow: 1; width: 90%; margin: 10px auto; position: relative;
+            background: rgba(40, 40, 80, 0.1); border: 1px solid #333;
+            border-radius: 5px; overflow: hidden;
         }
+        /* 기괴한 타겟 스타일 */
         .target {
-            position: absolute; padding: 15px 25px; background: #fff;
-            color: #000; font-weight: bold; border-radius: 4px;
-            box-shadow: 5px 5px 0px var(--main); cursor: pointer;
-            user-select: none; z-index: 100;
+            position: absolute; padding: 10px 20px; background: #fff;
+            color: #000; font-weight: bold; border: 2px solid var(--neon);
+            box-shadow: 10px 10px 0px rgba(0, 255, 204, 0.2);
+            cursor: crosshair; user-select: none; z-index: 100;
+            transition: transform 0.05s;
         }
+        .target:active { transform: scale(0.8) rotate(5deg); }
+        
         #start-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 20px 60px; font-size: 24px; font-weight: bold;
-            background: #000; color: var(--main); border: 3px solid var(--main);
-            cursor: pointer; z-index: 200; box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+            padding: 20px 50px; font-size: 24px; background: #000;
+            color: var(--neon); border: 2px solid var(--neon);
+            cursor: pointer; z-index: 300; letter-spacing: 5px;
         }
-        #start-btn:hover { background: var(--main); color: #000; }
+        #high-score-tag { color: var(--neon); font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <div class="ad-space">AD REVENUE AREA - 수익 창출 대기 중</div>
+    <div class="ad-space">💰 AD REVENUE AREA (수익 채굴 지점) 💰</div>
     
     <div id="ui-layer">
-        <h2 style="margin:0; color:var(--main)">STRESS BREAKER v2.2</h2>
-        <p>SCORE: <span id="score">0</span> | TIME: <span id="timer">30</span></p>
+        <h1 style="margin:0; letter-spacing: 10px; color: var(--neon);">STRESS REVENGE</h1>
+        <p>SCORE: <span id="score">0</span> | BEST: <span id="high-score-tag">0</span></p>
+        <p>TIME: <span id="timer">30</span>s</p>
     </div>
 
     <div id="game-area">
-        <button id="start-btn" onclick="startGame()">작전 개시</button>
+        <button id="start-btn" onclick="startGame()">ENTER THE VOID</button>
     </div>
 
-    <div class="ad-space" style="border-top: 1px solid #222; border-bottom: none;">AD REVENUE AREA - 배너 위치 사수</div>
+    <div class="ad-space" style="border-top: 1px solid #222;">💰 AD REVENUE AREA (달러 폭격 지점) 💰</div>
 
     <script>
         const gameArea = document.getElementById('game-area');
         const scoreBox = document.getElementById('score');
+        const highScoreBox = document.getElementById('high-score-tag');
         const timerBox = document.getElementById('timer');
         const startBtn = document.getElementById('start-btn');
+        
         let score = 0, timeLeft = 30, gameInterval;
+        const words = ['불합격', '탈락', '초조함', '기다림', '실수', '나의 가치', '드림코어'];
 
-        const words = ['불합격', '스트레스', '초조함', '기다림', '실수', '낙방은 없다'];
+        // 하이점수 로드 기강 잡기
+        let highScore = localStorage.getItem('wooks_high_score') || 0;
+        highScoreBox.innerText = highScore;
 
         function startGame() {
-            console.log("Game Started!"); // 디버깅용
             score = 0; timeLeft = 30;
             scoreBox.innerText = score;
             timerBox.innerText = timeLeft;
-            startBtn.style.display = 'none'; // 버튼 완전히 제거
+            startBtn.style.display = 'none';
             gameArea.innerHTML = '';
-            
             spawnTarget();
             
-            if(gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(() => {
                 timeLeft--;
                 timerBox.innerText = timeLeft;
@@ -86,16 +97,15 @@
             target.className = 'target';
             target.innerText = words[Math.floor(Math.random() * words.length)];
             
-            // 크기 계산 후 랜덤 위치 배치
             const x = Math.random() * (gameArea.clientWidth - 150);
             const y = Math.random() * (gameArea.clientHeight - 80);
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
             
-            target.style.left = Math.max(10, x) + 'px';
-            target.style.top = Math.max(10, y) + 'px';
-            
-            target.onmousedown = (e) => { // click 대신 mousedown으로 반응 속도 UP
+            target.onmousedown = () => {
                 score++;
                 scoreBox.innerText = score;
+                // 타겟이 점점 작아지며 난이도 상승!
                 spawnTarget();
             };
             gameArea.appendChild(target);
@@ -103,10 +113,18 @@
 
         function endGame() {
             clearInterval(gameInterval);
+            // 하이점수 갱신 기강
+            if(score > highScore) {
+                highScore = score;
+                localStorage.setItem('wooks_high_score', highScore);
+                highScoreBox.innerText = highScore;
+                alert("축하하우! 새로운 전설이 탄생했습네다!");
+            }
+            
             gameArea.innerHTML = `
-                <div style="text-align:center; margin-top:20%; font-size:24px; color:var(--main)">
-                    작전 종료!<br>최종 타격 점수: ${score}<br>
-                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 20px; cursor:pointer;">다시 시도</button>
+                <div style="text-align:center; margin-top:15%; font-size:28px;">
+                    작전 종료.<br>파괴 점수: ${score}<br>
+                    <button onclick="startGame()" style="margin-top:30px; padding:10px 20px; cursor:pointer; background:none; color:var(--neon); border:1px solid var(--neon);">다시 도전</button>
                 </div>`;
         }
     </script>
