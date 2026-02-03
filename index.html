@@ -2,15 +2,21 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>DREAMCORE: REVENGE v3.1 (MONETIZED)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAMCORE REVENGE: Stress Relief Game</title>
+    <meta name="description" content="작업치료사의 미학이 담긴 드림코어 감성 스트레스 해소 게임. 전 세계 유저들과 랭킹을 겨루고 달러를 채굴하세요.">
+    <meta name="keywords" content="스트레스해소, 웹게임, 드림코어, Dreamcore, 작업치료, 무료게임, 클릭커게임">
+    <meta property="og:title" content="DREAMCORE REVENGE">
+    <meta property="og:description" content="당신의 스트레스를 타격하고 사장님 등급에 도전하세요!">
+
     <style>
-        :root { --neon: #00ffcc; --ghost: #ffffff; --void: #0a0a0a; }
+        :root { --neon: #00ffcc; --ghost: #ffffff; --void: #0a0a0a; --danger: #ff0055; }
         body {
             background: var(--void); color: var(--ghost);
             font-family: 'Courier New', monospace; margin: 0;
             display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
-        /* 드림코어 CRT 효과 */
+        /* CRT 주사선 및 노이즈 효과 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
@@ -18,106 +24,24 @@
             z-index: 200; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
         .ad-space {
-            height: 50px; background: rgba(255,255,255,0.05);
+            height: 50px; background: rgba(0, 255, 204, 0.05);
             display: flex; justify-content: center; align-items: center;
-            font-size: 10px; color: #444; border-bottom: 1px solid #222; z-index: 10;
+            font-size: 11px; color: var(--neon); border-bottom: 1px solid #222; z-index: 10;
         }
-        #ui-layer { text-align: center; padding: 15px; z-index: 50; }
+        #ui-layer { text-align: center; padding: 10px; z-index: 50; }
         #game-area {
-            flex-grow: 1; width: 90%; margin: 10px auto; position: relative;
-            background: rgba(40, 40, 80, 0.1); border: 1px solid #333;
-            border-radius: 5px; overflow: hidden;
+            flex-grow: 1; width: 95%; margin: 10px auto; position: relative;
+            background: rgba(40, 40, 80, 0.05); border: 1px solid #333;
+            border-radius: 10px; overflow: hidden;
         }
         .target {
-            position: absolute; padding: 10px 20px; background: #fff;
-            color: #000; font-weight: bold; border: 2px solid var(--neon);
-            box-shadow: 10px 10px 0px rgba(0, 255, 204, 0.2);
+            position: absolute; padding: 12px 24px; background: #fff;
+            color: #000; font-weight: bold; border: 3px solid var(--neon);
+            box-shadow: 8px 8px 0px var(--danger);
             cursor: crosshair; user-select: none; z-index: 100;
+            transition: transform 0.1s;
         }
+        .target:active { transform: scale(0.9); }
         #start-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 20px 50px; font-size: 24px; background: #000;
-            color: var(--neon); border: 2px solid var(--neon);
-            cursor: pointer; z-index: 300; letter-spacing: 5px;
-        }
-    </style>
-</head>
-<body>
-    <script src="https://pl28635603.effectivegatecpm.com/8b/fb/c6/8bfbc6462a936aabe657a40f7fb4cf07.js"></script>
-
-    <div class="ad-space">💰 AD REVENUE STREAMING... 💰</div>
-    
-    <div id="ui-layer">
-        <h1 style="margin:0; letter-spacing: 10px; color: var(--neon);">STRESS REVENGE</h1>
-        <p>SCORE: <span id="score">0</span> | BEST: <span id="high-score-tag">0</span></p>
-        <p>TIME: <span id="timer">30</span>s</p>
-    </div>
-
-    <div id="game-area">
-        <button id="start-btn" onclick="startGame()">ENTER THE VOID</button>
-    </div>
-
-    <script>
-        const gameArea = document.getElementById('game-area');
-        const scoreBox = document.getElementById('score');
-        const highScoreBox = document.getElementById('high-score-tag');
-        const timerBox = document.getElementById('timer');
-        const startBtn = document.getElementById('start-btn');
-        
-        let score = 0, timeLeft = 30, gameInterval;
-        const words = ['불합격', '군면제', '초조함', '기다림', '병원의 실수', '나의 가치'];
-
-        let highScore = localStorage.getItem('wooks_high_score') || 0;
-        highScoreBox.innerText = highScore;
-
-        function startGame() {
-            score = 0; timeLeft = 30;
-            scoreBox.innerText = score;
-            timerBox.innerText = timeLeft;
-            startBtn.style.display = 'none';
-            gameArea.innerHTML = '';
-            spawnTarget();
-            
-            if(gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(() => {
-                timeLeft--;
-                timerBox.innerText = timeLeft;
-                if(timeLeft <= 0) endGame();
-            }, 1000);
-        }
-
-        function spawnTarget() {
-            gameArea.innerHTML = '';
-            const target = document.createElement('div');
-            target.className = 'target';
-            target.innerText = words[Math.floor(Math.random() * words.length)];
-            
-            const x = Math.random() * (gameArea.clientWidth - 150);
-            const y = Math.random() * (gameArea.clientHeight - 80);
-            target.style.left = x + 'px';
-            target.style.top = y + 'px';
-            
-            target.onmousedown = () => {
-                score++;
-                scoreBox.innerText = score;
-                spawnTarget();
-            };
-            gameArea.appendChild(target);
-        }
-
-        function endGame() {
-            clearInterval(gameInterval);
-            if(score > highScore) {
-                highScore = score;
-                localStorage.setItem('wooks_high_score', highScore);
-                highScoreBox.innerText = highScore;
-            }
-            gameArea.innerHTML = `
-                <div style="text-align:center; margin-top:15%; font-size:28px;">
-                    작전 종료.<br>파괴 점수: ${score}<br>
-                    <button onclick="startGame()" style="margin-top:30px; padding:10px 20px; cursor:pointer; background:none; color:var(--neon); border:1px solid var(--neon);">다시 도전</button>
-                </div>`;
-        }
-    </script>
-</body>
-</html>
+            padding: 25px 60px; font-size: 24px; background:
