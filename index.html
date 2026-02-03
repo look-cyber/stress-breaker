@@ -3,45 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DREAMCORE REVENGE: Stress Relief Game</title>
-    <meta name="description" content="작업치료사의 미학이 담긴 드림코어 감성 스트레스 해소 게임. 전 세계 유저들과 랭킹을 겨루고 달러를 채굴하세요.">
-    <meta name="keywords" content="스트레스해소, 웹게임, 드림코어, Dreamcore, 작업치료, 무료게임, 클릭커게임">
-    <meta property="og:title" content="DREAMCORE REVENGE">
-    <meta property="og:description" content="당신의 스트레스를 타격하고 사장님 등급에 도전하세요!">
-
+    <title>DREAMCORE REVENGE v4.1 (REPAIRED)</title>
     <style>
         :root { --neon: #00ffcc; --ghost: #ffffff; --void: #0a0a0a; --danger: #ff0055; }
-        body {
-            background: var(--void); color: var(--ghost);
-            font-family: 'Courier New', monospace; margin: 0;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-        }
-        /* CRT 주사선 및 노이즈 효과 */
-        body::before {
-            content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 200; background-size: 100% 2px, 3px 100%; pointer-events: none;
-        }
-        .ad-space {
-            height: 50px; background: rgba(0, 255, 204, 0.05);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 11px; color: var(--neon); border-bottom: 1px solid #222; z-index: 10;
-        }
+        body { background: var(--void); color: var(--ghost); font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        /* CRT 효과 생략(속도 최적화) 후 배경 설정 */
         #ui-layer { text-align: center; padding: 10px; z-index: 50; }
-        #game-area {
-            flex-grow: 1; width: 95%; margin: 10px auto; position: relative;
-            background: rgba(40, 40, 80, 0.05); border: 1px solid #333;
-            border-radius: 10px; overflow: hidden;
+        #game-area { flex-grow: 1; width: 95%; margin: 10px auto; position: relative; background: rgba(255, 255, 255, 0.02); border: 1px solid #333; border-radius: 10px; overflow: hidden; }
+        .target { position: absolute; padding: 12px 24px; background: #fff; color: #000; font-weight: bold; border: 3px solid var(--neon); cursor: crosshair; z-index: 100; }
+        #start-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 25px 60px; font-size: 24px; background: transparent; color: var(--neon); border: 2px solid var(--neon); cursor: pointer; z-index: 300; }
+        .rank-tag { color: var(--danger); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="ui-layer">
+        <h1 style="margin:0; letter-spacing: 12px; color: var(--neon);">REVENGE v4.1</h1>
+        <p>SCORE: <span id="score">0</span> | BEST: <span id="high-score-tag">0</span></p>
+        <p>RANK: <span id="rank-display" class="rank-tag">-</span> | TIME: <span id="timer">30</span>s</p>
+    </div>
+
+    <div id="game-area">
+        <button id="start-btn" onclick="startGame()">START REVENGE</button>
+    </div>
+
+    <script>
+        // 게임 엔진 로직 (v4.0과 동일)
+        const gameArea = document.getElementById('game-area');
+        const scoreBox = document.getElementById('score');
+        const highScoreBox = document.getElementById('high-score-tag');
+        const timerBox = document.getElementById('timer');
+        const rankBox = document.getElementById('rank-display');
+        const startBtn = document.getElementById('start-btn');
+        
+        let score = 0, timeLeft = 30, gameInterval;
+        const words = ['불합격', '초조함', '기다림', '스트레스'];
+
+        let highScore = localStorage.getItem('wooks_high_score') || 0;
+        highScoreBox.innerText = highScore;
+
+        function getRank(s) {
+            if (s >= 41) return "글로벌 CEO (박정욱)";
+            if (s >= 21) return "복수의 화신";
+            return "사회 초년생";
         }
-        .target {
-            position: absolute; padding: 12px 24px; background: #fff;
-            color: #000; font-weight: bold; border: 3px solid var(--neon);
-            box-shadow: 8px 8px 0px var(--danger);
-            cursor: crosshair; user-select: none; z-index: 100;
-            transition: transform 0.1s;
+
+        function startGame() {
+            score = 0; timeLeft = 30;
+            scoreBox.innerText = score;
+            timerBox.innerText = timeLeft;
+            rankBox.innerText = getRank(0);
+            startBtn.style.display = 'none';
+            gameArea.innerHTML = '';
+            spawnTarget();
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(() => {
+                timeLeft--;
+                timerBox.innerText = timeLeft;
+                if(timeLeft <= 0) endGame();
+            }, 1000);
         }
-        .target:active { transform: scale(0.9); }
-        #start-btn {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 25px 60px; font-size: 24px; background:
+
+        function spawnTarget() {
+            gameArea.innerHTML = '';
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.innerText = words[Math.floor(Math.random() * words.length)];
+            const x = Math.random() * (gameArea.clientWidth - 180);
+            const y = Math.random() * (gameArea.clientHeight - 80);
+            target.style.left = x + 'px'; target.style.top = y + 'px';
+            target.onmousedown = () => { score++; scoreBox.innerText = score; rankBox.innerText = getRank(score); spawnTarget(); };
+            gameArea.appendChild(target);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            startBtn.style.display = 'block';
+            startBtn.innerText = "RETRY";
+            gameArea.innerHTML = `<div style="text-align:center; margin-top:15%;">종료 점수: ${score}</div>`;
+        }
+    </script>
+
+    <script src="https://pl28635603.effectivegatecpm.com/8b/fb/c6/8bfbc6462a936aabe657a40f7fb4cf07.js"></script>
+</body>
+</html>
