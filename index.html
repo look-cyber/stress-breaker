@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>DREAMCORE: STRESS REVENGE v3.0</title>
+    <title>DREAMCORE: REVENGE v3.1 (MONETIZED)</title>
     <style>
         :root { --neon: #00ffcc; --ghost: #ffffff; --void: #0a0a0a; }
         body {
@@ -10,7 +10,7 @@
             font-family: 'Courier New', monospace; margin: 0;
             display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
-        /* 드림코어 CRT 노이즈 효과 */
+        /* 드림코어 CRT 효과 */
         body::before {
             content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
@@ -28,27 +28,24 @@
             background: rgba(40, 40, 80, 0.1); border: 1px solid #333;
             border-radius: 5px; overflow: hidden;
         }
-        /* 기괴한 타겟 스타일 */
         .target {
             position: absolute; padding: 10px 20px; background: #fff;
             color: #000; font-weight: bold; border: 2px solid var(--neon);
             box-shadow: 10px 10px 0px rgba(0, 255, 204, 0.2);
             cursor: crosshair; user-select: none; z-index: 100;
-            transition: transform 0.05s;
         }
-        .target:active { transform: scale(0.8) rotate(5deg); }
-        
         #start-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             padding: 20px 50px; font-size: 24px; background: #000;
             color: var(--neon); border: 2px solid var(--neon);
             cursor: pointer; z-index: 300; letter-spacing: 5px;
         }
-        #high-score-tag { color: var(--neon); font-size: 1.2rem; }
     </style>
 </head>
 <body>
-    <div class="ad-space">💰 AD REVENUE AREA (수익 채굴 지점) 💰</div>
+    <script src="https://pl28635603.effectivegatecpm.com/8b/fb/c6/8bfbc6462a936aabe657a40f7fb4cf07.js"></script>
+
+    <div class="ad-space">💰 AD REVENUE STREAMING... 💰</div>
     
     <div id="ui-layer">
         <h1 style="margin:0; letter-spacing: 10px; color: var(--neon);">STRESS REVENGE</h1>
@@ -60,8 +57,6 @@
         <button id="start-btn" onclick="startGame()">ENTER THE VOID</button>
     </div>
 
-    <div class="ad-space" style="border-top: 1px solid #222;">💰 AD REVENUE AREA (달러 폭격 지점) 💰</div>
-
     <script>
         const gameArea = document.getElementById('game-area');
         const scoreBox = document.getElementById('score');
@@ -70,9 +65,8 @@
         const startBtn = document.getElementById('start-btn');
         
         let score = 0, timeLeft = 30, gameInterval;
-        const words = ['불합격', '탈락', '초조함', '기다림', '실수', '나의 가치', '드림코어'];
+        const words = ['불합격', '군면제', '초조함', '기다림', '병원의 실수', '나의 가치'];
 
-        // 하이점수 로드 기강 잡기
         let highScore = localStorage.getItem('wooks_high_score') || 0;
         highScoreBox.innerText = highScore;
 
@@ -84,6 +78,7 @@
             gameArea.innerHTML = '';
             spawnTarget();
             
+            if(gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(() => {
                 timeLeft--;
                 timerBox.innerText = timeLeft;
@@ -105,7 +100,6 @@
             target.onmousedown = () => {
                 score++;
                 scoreBox.innerText = score;
-                // 타겟이 점점 작아지며 난이도 상승!
                 spawnTarget();
             };
             gameArea.appendChild(target);
@@ -113,20 +107,11 @@
 
         function endGame() {
             clearInterval(gameInterval);
-            // 하이점수 갱신 기강
             if(score > highScore) {
                 highScore = score;
                 localStorage.setItem('wooks_high_score', highScore);
                 highScoreBox.innerText = highScore;
-                alert("축하하우! 새로운 전설이 탄생했습네다!");
             }
-            
             gameArea.innerHTML = `
                 <div style="text-align:center; margin-top:15%; font-size:28px;">
-                    작전 종료.<br>파괴 점수: ${score}<br>
-                    <button onclick="startGame()" style="margin-top:30px; padding:10px 20px; cursor:pointer; background:none; color:var(--neon); border:1px solid var(--neon);">다시 도전</button>
-                </div>`;
-        }
-    </script>
-</body>
-</html>
+                    작전 종료.<br>파괴
